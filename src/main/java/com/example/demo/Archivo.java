@@ -1,6 +1,8 @@
 package com.example.demo;
 
-
+/**
+ * Clase que representa un archivo en el sistema.
+ */
 public class Archivo {
     int id;
     String nombreUsuario;
@@ -8,11 +10,26 @@ public class Archivo {
     String contenido;
     String fechaCreacion;
 
+    /**
+     * Constructor para la creación de un nuevo archivo.
+     *
+     * @param nombreArchivo Nombre del archivo.
+     * @param fechaCreacion Fecha de creación del archivo.
+     */
     public Archivo(String nombreArchivo, String fechaCreacion) {
         this.nombreArchivo = nombreArchivo;
         this.fechaCreacion = fechaCreacion;
     }
 
+    /**
+     * Constructor para la creación de un archivo existente con identificación de usuario.
+     *
+     * @param id            Identificador único del archivo.
+     * @param nombreUsuario Nombre del usuario asociado al archivo.
+     * @param nombreArchivo Nombre del archivo.
+     * @param contenido     Contenido del archivo.
+     * @param fechaCreacion Fecha de creación del archivo.
+     */
     public Archivo(int id, String nombreUsuario, String nombreArchivo, String contenido, String fechaCreacion) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;

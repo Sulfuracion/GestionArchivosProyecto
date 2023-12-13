@@ -5,7 +5,9 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Clase que maneja las operaciones relacionadas con la base de datos para la entidad Usuario y Archivo.
+ */
 public class UsuarioDB {
     public static Connection connection;
 
@@ -13,10 +15,11 @@ public class UsuarioDB {
 
 
     /**
-     * Se conecta a la base de datos
+     * Establece la conexión con la base de datos.
+     *
+     * @return True si la conexión fue exitosa, false en caso contrario.
      */
-    public static boolean connection(){
-
+    public static boolean connection() {
         try {
             connection = DriverManager.getConnection(Constantes.RUTA_BBDD, Constantes.USUARIO_BBDD, Constantes.CONTRASEÑA_BBDD);
         } catch (SQLException e) {
@@ -28,7 +31,11 @@ public class UsuarioDB {
 
 
     /**
-     * Comprueba si el usuario existe, en tal caso true
+     * Comprueba si un usuario existe en la base de datos.
+     *
+     * @param usuario   Nombre de usuario.
+     * @param contrasena Contraseña del usuario.
+     * @return True si el usuario existe, false en caso contrario.
      */
     public static boolean comprobarUsuario(String usuario, String contrasena) {
         String sentenciaSQL = "SELECT * FROM usuarios WHERE nombreUsuario=? AND contrasena=?";
@@ -58,9 +65,15 @@ public class UsuarioDB {
 
 
     /**
-     * crea un usuario
+     * Registra un nuevo usuario en la base de datos.
+     *
+     * @param nombreUsuario Nombre de usuario.
+     * @param contrasena    Contraseña del usuario.
+     * @param nombre        Nombre del usuario.
+     * @param apellidos     Apellidos del usuario.
+     * @param email         Dirección de correo electrónico del usuario.
+     * @return True si el registro fue exitoso, false en caso contrario.
      */
-
     public static boolean ingresarUsuario(String nombreUsuario, String contrasena, String nombre, String apellidos, String email) {
         String sql = "insert into usuarios(nombreUsuario, contrasena, nombre, apellidos, email) values (?,?,?,?,?)";
         try {
@@ -83,8 +96,13 @@ public class UsuarioDB {
     }
 
 
+
     /**
-     * Pilla los datos del usuario
+     * Obtiene los datos de un usuario especificado por nombre de usuario y contraseña.
+     *
+     * @param nombreUsuario Nombre de usuario.
+     * @param contrasena    Contraseña del usuario.
+     * @return Cadena que contiene los datos del usuario.
      */
     public static String getDatos(String nombreUsuario, String contrasena) {
         String sentenciaSQL = "SELECT * FROM  usuarios WHERE nombreUsuario=? AND contrasena=?";
@@ -111,7 +129,11 @@ public class UsuarioDB {
         }
         return datos;
     }
-
+    /**
+     * Obtiene la lista de archivos asociados al usuario actual.
+     *
+     * @return Lista de archivos del usuario actual o null si hay un error de conexión o SQL.
+     */
     public static List<Archivo> getArchivos() {
         String sentenciaSQL = "SELECT * FROM  archivos WHERE nombreUsuario=?";
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
@@ -135,7 +157,10 @@ public class UsuarioDB {
         return datos;
     }
     /**
-     * elimina al estudiante
+     * Elimina un usuario de la base de datos.
+     *
+     * @param id Identificador del usuario a eliminar.
+     * @return True si la eliminación fue exitosa, false en caso contrario.
      */
     public static boolean eliminarUsuario(String id){
         String sentenciaSQL = "delete from usuarios where id=?";
@@ -155,13 +180,22 @@ public class UsuarioDB {
     }
 
     /**
-     * Devuelve los datos del usuario guardados en conf
-     * @return datos usuario
+     * Obtiene los datos del usuario actual.
+     *
+     * @return Cadena que contiene los datos del usuario actual.
      */
     public static String getDatos() {
         return usuarioApp.toString();
     }
 
+    /**
+     * Guarda un archivo en la base de datos.
+     *
+     * @param archivoBLOB     Contenido del archivo codificado en formato de objeto binario grande.
+     * @param nombreArchivo   Nombre del archivo.
+     * @return True si la operación fue exitosa, false en caso contrario.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     public static boolean guardarEnBDD(String archivoBLOB, String nombreArchivo) throws SQLException {
         connection();
         String sql = "INSERT INTO ARCHIVOS (NOMBREUSUARIO, NOMBREARCHIVO, CONTENIDO) VALUES (?,?,?)";
@@ -174,7 +208,12 @@ public class UsuarioDB {
 
         return true;
     }
-
+    /**
+     * Actualiza el contenido de un archivo en la base de datos.
+     *
+     * @param contenidoCodificado Contenido del archivo codificado.
+     * @throws RuntimeException Si ocurre un error durante la ejecución de la actualización.
+     */
     public static void actualizarArchivo(String contenidoCodificado) {
         connection();
         String sql = "UPDATE ARCHIVOS SET CONTENIDO = ? WHERE NOMBREARCHIVO = ?";
@@ -187,7 +226,13 @@ public class UsuarioDB {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Recupera el contenido de un archivo desde la base de datos.
+     *
+     * @param nombreArchivo Nombre del archivo a recuperar.
+     * @return Contenido del archivo o una cadena vacía si no se encuentra.
+     * @throws RuntimeException Si ocurre un error durante la ejecución de la recuperación.
+     */
     public static String recuperarArchivo(String nombreArchivo) {
         connection();
         String sql = "SELECT CONTENIDO FROM ARCHIVOS WHERE nombreArchivo = ?";
@@ -204,18 +249,28 @@ public class UsuarioDB {
         }
         return "";
     }
-
+    /**
+     * Establece el usuario actual de la aplicación.
+     *
+     * @param usuarioApp Objeto Usuario que representa al usuario actual.
+     */
     public static void setUsuarioApp(Usuario usuarioApp) {
         UsuarioDB.usuarioApp = usuarioApp;
     }
-
+    /**
+     * Obtiene el usuario actual de la aplicación.
+     *
+     * @return Objeto Usuario que representa al usuario actual.
+     */
     public static Usuario getUsuarioApp() {
         return usuarioApp;
     }
 
 
     /**
-     * Termina la conexion
+     * Cierra la conexión con la base de datos.
+     *
+     * @return True si la conexión se cerró correctamente, false en caso contrario.
      */
     public static boolean close(){
         try {
@@ -226,7 +281,12 @@ public class UsuarioDB {
             return false;
         }
     }
-
+    /**
+     * Borra un archivo de la base de datos.
+     *
+     * @param nombreArchivo Nombre del archivo a borrar.
+     * @return True si la operación fue exitosa, false en caso contrario.
+     */
     public static boolean borrarArchivo(String nombreArchivo) {
         connection();
         String sql = "DELETE FROM ARCHIVOS WHERE NOMBREUSUARIO = ? AND NOMBREARCHIVO = ?";
